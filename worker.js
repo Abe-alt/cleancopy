@@ -1,54 +1,62 @@
 'use strict';
 
-// Context Menu
-{
-  const callback = () => {
-    chrome.contextMenus.create({
-      id: 'copy-plain',
-      title: 'Copy plain text to the clipboard',
-      contexts: ['selection'] // Show only when text is selected
-    });
-  };
-  chrome.runtime.onInstalled.addListener(callback);
-  chrome.runtime.onStartup.addListener(callback);
-}
+// Context Menu Setup
+const setupContextMenu = () => {
+  chrome.contextMenus.create({
+    id: 'copy-plain',
+    title: 'Copy plain text to the clipboard',
+    contexts: ['selection'], // Show only when text is selected
+  });
+};
 
+// Handle Context Menu Click
 chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  const method = info.menuItemId || '';
-  let selected = info.selectionText;
-
-  try {
-    // Attempt to get selected text
-    const a = await chrome.scripting.executeScript({
-      target: {
-        tabId: tab.id,
-        frameIds: [info.frameId]
-      },
-      func: () => window.getSelection().toString().trim()
-    });
-
-    if (a && a.length && a[0].result) {
-      selected = a[0].result;
-    }
-  } catch (e) {
-    console.warn('Failed to fetch selected text:', e);
+  if (info.menuItemId === 'copy-plain') {
+    handleCopyAction(tab, info.frameId);
   }
+});
 
-  if (method === 'copy-plain' && selected) {
-    try {
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: msg => {
-          navigator.clipboard.writeText(msg).then(() => {
-            const t = document.title;
-            document.title = 'Selected text is copied as plain text';
-            setTimeout(() => (document.title = t), 750);
-          }).catch(e => alert(e.message));
-        },
-        args: [selected]
-      });
-    } catch (e) {
-      console.error('Failed to copy plain text:', e);
+// Handle Keyboard Shortcut
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command === 'copy_plain_text') {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (tab) {
+      handleCopyAction(tab);
     }
   }
 });
+
+async function handleCopyAction(tab, frameId = null) {
+    try {
+      // Attempt to get the selected text
+      const result = await chrome.scripting.executeScript({
+        target: { tabId: tab.id, frameIds: frameId ? [frameId] : undefined },
+        func: () => window.getSelection().toString().trim(),
+      });
+  
+      if (result && result[0]?.result) {
+        const selectedText = result[0].result;
+  
+        // Inject clipboard logic into the active tab
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          func: (text) => {
+            navigator.clipboard.writeText(text).then(() => {
+              console.log('Text copied to clipboard:', text);
+            }).catch((err) => {
+              console.error('Failed to write to clipboard:', err);
+              alert('Failed to copy text: ' + err.message);
+            });
+          },
+          args: [selectedText],
+        });
+      } else {
+        console.warn('No text selected.');
+      }
+    } catch (err) {
+      console.error('Failed to copy plain text:', err);
+    }
+  }
+  // Initialize Context Menu
+chrome.runtime.onInstalled.addListener(setupContextMenu);
+chrome.runtime.onStartup.addListener(setupContextMenu);
