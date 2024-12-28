@@ -1,10 +1,13 @@
 'use strict';
 
+// Define keyboard shortcut hint
+const shortcutHint = '(Ctrl+Shift+C)'; 
+
 // Context Menu Setup
 const setupContextMenu = () => {
   chrome.contextMenus.create({
     id: 'copy-plain',
-    title: 'Copy plain text to the clipboard',
+    title: `Copy plain text to the clipboard ${shortcutHint}`,
     contexts: ['selection'], // Show only when text is selected
   });
 };
