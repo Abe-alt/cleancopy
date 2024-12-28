@@ -9,12 +9,12 @@
       "64": "data/icons/64.ico"
     },
     "permissions": [
-        "contextMenus",
-        "activeTab",
-        "clipboardWrite"
-      ],
+        "contextMenus", 
+        "scripting"],
+    "host_permissions": ["<all_urls>"],
+
     "background": {
-        "service_worker": "background.js"
+        "service_worker": "worker.js"
       }
   }
   
