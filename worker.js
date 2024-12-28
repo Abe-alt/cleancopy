@@ -1,7 +1,9 @@
 'use strict';
 
-// Define keyboard shortcut hint
-const shortcutHint = '(Ctrl+Shift+C)'; 
+// Define keyboard shortcut hint based on the user's platform
+const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+const shortcutHint = isMac ? '(Cmd+Shift+C)' : '(Ctrl+Shift+C)';
+
 
 // Context Menu Setup
 const setupContextMenu = () => {
