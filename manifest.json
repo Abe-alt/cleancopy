@@ -4,9 +4,9 @@
     "name": "Clean Copy",
     "description": "Clean Copy is a simple extension that removes all formatting from the selected text before copying it to the clipboard.",
     "icons": {
-      "16": "data/icons/16.ico",
-      "32": "data/icons/32.ico",
-      "64": "data/icons/64.ico"
+      "16": "data/icons/16.png",
+      "32": "data/icons/32.png",
+      "64": "data/icons/64.png"
     },
     "permissions": [
         "contextMenus", 
