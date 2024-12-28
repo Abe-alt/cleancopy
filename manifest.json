@@ -19,8 +19,8 @@
     "commands": {
       "copy_plain_text": {
         "suggested_key": {
-          "default": "Ctrl+Shift+C",
-          "mac": "Command+Shift+C"
+          "default": "Ctrl+Shift+X",
+          "mac": "Command+Shift+X"
         },
         "description": "Copy selected text as plain text"
       }
